@@ -1,7 +1,11 @@
-version: '2'
+version: '2.1'
 services:
   config-server:
-    image: microservices/config-server:latest
+    image: microservice/config-server:latest
+    build:
+      context: ${PWD}/config-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker    
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -13,7 +17,11 @@ services:
       - microservices
 
   eureka-server:
-    image: microservices/eureka-server:latest
+    image: microservice/eureka-server:latest
+    build:
+      context: ${PWD}/eureka-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -28,7 +36,11 @@ services:
     restart: "always"
 
   security-server:
-    image: microservices/security-server:latest
+    image: microservice/security-server:latest
+    build:
+      context: ${PWD}/security-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -44,7 +56,11 @@ services:
     restart: "always"
 
   aluno-service:
-    image: microservices/aluno-service:latest
+    image: microservice/aluno-service:latest
+    build:
+      context: ${PWD}/aluno-service/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -61,7 +77,11 @@ services:
     restart: "always"
 
   disciplina-service:
-    image: microservices/disciplina-service:latest
+    image: microservice/disciplina-service:latest
+    build:
+      context: ${PWD}/disciplina-service/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -78,7 +98,11 @@ services:
     restart: "always"
 
   zuul-server:
-    image: microservices/zuul-server:latest
+    image: microservice/zuul-server:latest
+    build:
+      context: ${PWD}/zuul-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -97,7 +121,11 @@ services:
     restart: "always"
 
   hystrix-dashboard:
-    image: microservices/hystrix-dashboard:latest
+    image: microservice/hystrix-dashboard:latest
+    build:
+      context: ${PWD}/hystrix-dashboard/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -113,7 +141,11 @@ services:
     restart: "always"
 
   turbine-stream:
-    image: microservices/turbine-stream:latest
+    image: microservice/turbine-stream:latest
+    build:
+      context: ${PWD}/turbine-stream/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -129,7 +161,11 @@ services:
     restart: "always"
 
   admin-server:
-    image: microservices/admin-server:latest
+    image: microservice/admin-server:latest
+    build:
+      context: ${PWD}/admin-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -145,7 +181,11 @@ services:
     restart: "always"
 
   zipkin-server:
-    image: microservices/zipkin-server:latest
+    image: microservice/zipkin-server:latest
+    build:
+      context: ${PWD}/zipkin-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -161,7 +201,11 @@ services:
     restart: "always"
 
   dashboard-server:
-    image: microservices/dashboard-server:latest
+    image: microservice/dashboard-server:latest
+    build:
+      context: ${PWD}/dashboard-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
     mem_limit: 1073741824 # RAM 1GB
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -177,7 +221,7 @@ services:
     restart: "always"
 
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3.8-management"
     hostname: "rabbitmq"
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
@@ -189,7 +233,7 @@ services:
       - microservices
 
   elasticsearch:
-    image: elasticsearch
+    image: elasticsearch:6.8.15
     mem_limit: 2147483648
     environment:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
@@ -205,7 +249,7 @@ services:
       - microservices
 
   logstash:
-    image: logstash
+    image: logstash:6.8.15
     command: logstash -e 'input {
                             tcp {
                               port => 5000
@@ -224,7 +268,7 @@ services:
       - microservices
 
   kibana:
-    image: kibana
+    image: kibana:6.8.15
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     ports:
