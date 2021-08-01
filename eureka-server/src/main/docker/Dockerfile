@@ -1,4 +1,4 @@
-FROM java:8
+FROM openjdk:8-slim
 
 ARG SPRING_PROFILES_ACTIVE
 ARG JAVA_OPTS
@@ -14,6 +14,8 @@ ADD *.jar /app.jar
 VOLUME /tmp
 
 RUN sh -c 'touch /app.jar'
+
+#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AA8E81B4331F7F50
 
 RUN apt-get update && apt-get install -y wget
 RUN wget https://github.com/jwilder/dockerize/releases/download/v0.1.0/dockerize-linux-amd64-v0.1.0.tar.gz

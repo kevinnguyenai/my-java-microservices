@@ -1,0 +1,283 @@
+version: '2.1'
+services:
+  config-server:
+    image: microservice/config-server:latest
+    build:
+      context: ${PWD}/config-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker    
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    expose:
+      - "8888"
+    ports:
+      - "8888:8888"
+    networks:
+      - microservices
+
+  eureka-server:
+    image: microservice/eureka-server:latest
+    build:
+      context: ${PWD}/eureka-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+    expose:
+      - "8761"
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices
+    restart: "always"
+
+  security-server:
+    image: microservice/security-server:latest
+    build:
+      context: ${PWD}/security-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "9999"
+    ports:
+      - "9999:9999"
+    networks:
+      - microservices
+    restart: "always"
+
+  aluno-service:
+    image: microservice/aluno-service:latest
+    build:
+      context: ${PWD}/aluno-service/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+      - security-server
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices
+    restart: "always"
+
+  disciplina-service:
+    image: microservice/disciplina-service:latest
+    build:
+      context: ${PWD}/disciplina-service/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+      - security-server
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices
+    restart: "always"
+
+  zuul-server:
+    image: microservice/zuul-server:latest
+    build:
+      context: ${PWD}/zuul-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+      - security-server
+      - aluno-service
+      - disciplina-service
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - microservices
+    restart: "always"
+
+  hystrix-dashboard:
+    image: microservice/hystrix-dashboard:latest
+    build:
+      context: ${PWD}/hystrix-dashboard/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "7979"
+    ports:
+      - "7979:7979"
+    networks:
+      - microservices
+    restart: "always"
+
+  turbine-stream:
+    image: microservice/turbine-stream:latest
+    build:
+      context: ${PWD}/turbine-stream/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "8989"
+    ports:
+      - "8989:8989"
+    networks:
+      - microservices
+    restart: "always"
+
+  admin-server:
+    image: microservice/admin-server:latest
+    build:
+      context: ${PWD}/admin-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "9000"
+    ports:
+      - "9000:9000"
+    networks:
+      - microservices
+    restart: "always"
+
+  zipkin-server:
+    image: microservice/zipkin-server:latest
+    build:
+      context: ${PWD}/zipkin-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "9411"
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices
+    restart: "always"
+
+  dashboard-server:
+    image: microservice/dashboard-server:latest
+    build:
+      context: ${PWD}/dashboard-server/src/main/docker
+      args:
+        SPRING_PROFILES_ACTIVE: docker
+    mem_limit: 1073741824 # RAM 1GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - config-server
+      - eureka-server
+    expose:
+      - "9001"
+    ports:
+      - "9001:9001"
+    networks:
+      - microservices
+    restart: "always"
+
+  rabbitmq:
+    image: "rabbitmq:3.8-management"
+    hostname: "rabbitmq"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - microservices
+
+  elasticsearch:
+    image: elasticsearch:6.8.15
+    mem_limit: 2147483648
+    environment:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      MAX_OPEN_FILES: 65536
+    ulimits:
+      nofile:
+          soft: 65536
+          hard: 65536
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - microservices
+
+  logstash:
+    image: logstash:6.8.15
+    command: logstash -e 'input {
+                            tcp {
+                              port => 5000
+                              codec => json_lines
+                            }
+                          }
+                          output {
+                            elasticsearch { hosts => "elasticsearch:9200" }
+                            stdout { codec => rubydebug }
+                          }'
+    ports:
+      - "5000:5000"
+    links:
+      - elasticsearch
+    networks:
+      - microservices
+
+  kibana:
+    image: kibana:6.8.15
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+    networks:
+      - microservices
+
+networks:
+  microservices:
+    driver: bridge
