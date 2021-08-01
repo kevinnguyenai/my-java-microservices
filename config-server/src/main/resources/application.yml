@@ -14,8 +14,10 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/rcandidosilva/workshop-microservices.git
-          search-paths: sources/extras/config-repo        
+          uri: https://github.com/kevinnguyenai/my-java-microservices.git
+          search-paths: config-repo
+          basedir: config-repo
+          default-label: default        
   rabbitmq:
     host: localhost
     port: 5672    
